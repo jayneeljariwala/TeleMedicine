@@ -8,6 +8,7 @@ public class NHS111DbContext(DbContextOptions<NHS111DbContext> options) : DbCont
     public DbSet<Disposition> Dispositions => Set<Disposition>();
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

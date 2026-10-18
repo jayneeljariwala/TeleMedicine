@@ -8,6 +8,7 @@ using NHS111.Infrastructure.Http;
 using NHS111.Infrastructure.Messaging;
 using NHS111.Infrastructure.Persistence;
 using NHS111.Infrastructure.Persistence.Repositories;
+using NHS111.Infrastructure.Security;
 using Polly;
 using Polly.Extensions.Http;
 using StackExchange.Redis;
@@ -35,12 +36,21 @@ public static class InfrastructureServiceExtensions
             ?? "localhost:6379";
 
         services.AddSingleton<IConnectionMultiplexer>(_ =>
-            ConnectionMultiplexer.Connect(redisConnectionString));
+        {
+            var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+            configOptions.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(configOptions);
+        });
 
         // 3. Register Repositories as Scoped
         services.AddScoped<IDispositionRepository, DispositionRepository>();
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IAuditRepository, AuditRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        // Security Services
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<ITokenBlacklistService, RedisTokenBlacklistService>();
 
         // 4. Register Typed HTTP Clients with Polly Retry Policy (3 retries: 2s, 4s, 8s)
         services.AddHttpClient<UmmanuHttpClient>(client =>
