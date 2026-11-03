@@ -11,7 +11,8 @@ public class ValidationException : Exception
     }
 
     public ValidationException(string error)
-        : this([error])
+        : base(error)
     {
+        Errors = [error];
     }
 }

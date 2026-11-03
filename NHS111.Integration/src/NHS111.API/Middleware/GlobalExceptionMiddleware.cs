@@ -62,6 +62,13 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
                 problemDetails.Extensions["errors"] = appValidationException.Errors;
                 break;
 
+            case UnauthorizedAccessException unauthorizedException:
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                problemDetails.Status = StatusCodes.Status401Unauthorized;
+                problemDetails.Title = "Unauthorized";
+                problemDetails.Detail = unauthorizedException.Message;
+                break;
+
             case FluentValidation.ValidationException fluentValidationException:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 problemDetails.Status = StatusCodes.Status400BadRequest;
@@ -74,11 +81,12 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 problemDetails.Status = StatusCodes.Status500InternalServerError;
                 problemDetails.Title = "Internal Server Error";
-                problemDetails.Detail = "An unexpected error occurred while processing your request.";
+                problemDetails.Detail = exception.Message;
                 break;
         }
 
         context.Response.ContentType = "application/problem+json";
-        await context.Response.WriteAsJsonAsync(problemDetails);
+        var json = System.Text.Json.JsonSerializer.Serialize(problemDetails);
+        await context.Response.WriteAsync(json);
     }
 }

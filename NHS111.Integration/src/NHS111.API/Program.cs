@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NHS111.API.Middleware;
 using NHS111.Application.Extensions;
+using NHS111.Application.Services;
+using NHS111.Domain.Interfaces;
 using NHS111.Infrastructure.Extensions;
 using NHS111.Infrastructure.Persistence;
 using Serilog;
@@ -51,6 +53,21 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtIssuer,
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = async context =>
+        {
+            var blacklistService = context.HttpContext.RequestServices.GetService<ITokenBlacklistService>();
+            if (blacklistService != null)
+            {
+                var token = context.Request.Headers.Authorization.ToString().Replace("Bearer ", "").Trim();
+                if (!string.IsNullOrEmpty(token) && await blacklistService.IsTokenBlacklistedAsync(token))
+                {
+                    context.Fail("Token has been revoked.");
+                }
+            }
+        }
     };
 });
 builder.Services.AddAuthorization();

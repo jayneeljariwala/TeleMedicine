@@ -3,6 +3,7 @@ namespace NHS111.Application.Extensions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using NHS111.Application.Services;
+using NHS111.Domain.Interfaces;
 
 public static class ApplicationServiceExtensions
 {
@@ -18,6 +19,10 @@ public static class ApplicationServiceExtensions
 
         // 3. Register IDispositionRoutingService as scoped
         services.AddScoped<IDispositionRoutingService, DispositionRoutingService>();
+
+        // 4. Register Authentication Services
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }
