@@ -26,6 +26,8 @@
     <ProjectReference Include="..\..\src\NHS111.Domain\NHS111.Domain.csproj" />
     <ProjectReference Include="..\..\src\NHS111.Infrastructure\NHS111.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\NHS111.Contracts\NHS111.Contracts.csproj" />
+    <ProjectReference Include="..\..\consumers\NHS111.UmmanuConsumer\NHS111.UmmanuConsumer.csproj" />
+    <ProjectReference Include="..\..\consumers\NHS111.AdastraConsumer\NHS111.AdastraConsumer.csproj" />
   </ItemGroup>
 
 </Project>
