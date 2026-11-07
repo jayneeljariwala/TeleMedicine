@@ -1,0 +1,22 @@
+services:
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./NHS111.Integration/src:/src
+
+  ummanu-consumer:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./NHS111.Integration/src:/src
+      - ./NHS111.Integration/consumers/NHS111.UmmanuConsumer:/consumers/NHS111.UmmanuConsumer
+
+  adastra-consumer:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./NHS111.Integration/src:/src
+      - ./NHS111.Integration/consumers/NHS111.AdastraConsumer:/consumers/NHS111.AdastraConsumer
